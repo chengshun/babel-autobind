@@ -1,3 +1,15 @@
+const REACT_METHODS = [	
+  'componentWillMount',
+  'componentDidMount',
+  'componentWillReceiveProps',
+  'shouldComponentUpdate',
+  'componentWillUpdate',
+  'componentDidUpdate',
+  'componentWillUnmount',
+  'render',
+];
+
+
 function createFunctionBind(t, name, method) {
 	return t.expressionStatement(
 		t.assignmentExpression(
@@ -40,7 +52,7 @@ module.exports = function({ types: t }){
 				const filterConstructor = body.filter(method =>  t.isClassMethod(method) && method.kind === 'constructor');
 
 				//遍历所有classMethod，过滤constructor之后
-				const methods = body.filter(method => t.isClassMethod(method) && method.kind !== 'constructor');
+				const methods = body.filter(method => t.isClassMethod(method) && method.kind !== 'constructor' && REACT_METHODS.indexOf(method.key.name) === -1);
 				const methodNames = methods.map(method => method.key.name);
 
 				//如果没有constructor，就添加constructor
@@ -75,7 +87,7 @@ module.exports = function({ types: t }){
 					let finalBindFuncs = [];
 
 					methodNames.forEach((methodName) => {
-						if (bindedMethodNames.indexOf(methodName) === -1) {
+						if (bindedMethodNames.indexOf(methodName) === -1 && REACT_METHODS.indexOf(methodName)) {
 							constructorBody.push(createFunctionBind(t, methodName));
 						}
 					});
