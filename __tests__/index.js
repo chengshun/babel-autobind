@@ -45,6 +45,16 @@ class Test extends Component {
 }`;
 
 
+var test6 = `class App extends Component{
+	constructor(props) {
+		super(props);
+		this.handleClick = this.handleClick.bind(this);
+	}
+	componentDidMount() {}
+	handleClick() {}
+	handleChange() {}
+}`;
+
 it('对单个没有constructor的class里的方法添加bind', () => {
 	const { code } = babel.transform(test1, {
 		plugins: [classPlugin, plugin],
@@ -88,4 +98,13 @@ it('对多个class里的函数，分别bind，互不影响', () => {
 	});
 
 	expect(code).toMatchSnapshot();	
-})
+});
+ 
+it('忽略react生命周期方法', () => {
+	const { code } = babel.transform(test6, {
+		plugins: [classPlugin, plugin],
+		presets: [react, env] 
+	});
+
+	expect(code).toMatchSnapshot();		
+});
